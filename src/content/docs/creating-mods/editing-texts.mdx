@@ -1,0 +1,63 @@
+---
+title: Editing Texts
+description: "A guide on how to edit texts (such as UI, dialogues and more) on Tomodachi Life: Living the Dream"
+sidebar:
+  order: 3
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+**MSBT (Message Binary Text)** files are used in **Tomodachi Life: Living the Dream** to store text data, such as interface, dialogue, items, and other in-game text.
+
+These files are stored inside a `.sarc.zs` file in the `romfs/Mals` folder and are named as `{language}.{type}.{version}.sarc.zs`, where:
+- `{language}` is the [Language Code](#language-codes)
+- `{type}` is either `Trial` (if is the **Demo** version) or `Production` (full game)
+- `{version}` is the game version (3rd line in `romfs/System/RegionLangMask.txt`) 
+
+In this guide you will learn how to install and setup **MSBT Editor** and how to use it to modify MSBT files.
+
+
+## Installing MSBT Editor
+**[MSBT Editor](/tools/msbt-editor)** is the primary tool used to edit MSBT files.
+
+<Steps>
+1. [Download the latest version of MSBT Editor](https://gitlab.com/AeonSake/msbt-editor/-/releases/permalink/latest) and [TomoLife_LtD.gcf](https://gitlab.com/AeonSake/msbt-editor/-/blob/master/configs/TomoLife_LtD.gcf). Both are updated frequently, so always check for updates!
+2. Extract the zip file and open `MsbtEditor.exe`.
+3. In the **MSBT Editor**, locate and click on the `Data` drop-down menu (at the very top) and on `Change Game Config`.
+4. Click on `Import Config...` and select your `TomoLife_LtD.gcf` file.
+5. Select `Tomodachi Life: Living the Dream` in the list.
+5. Your editor should be ready to use!
+</Steps>
+
+## Editing
+To edit messages is **really** simple, all you will need to do is localize your [language](#language-codes) in the `romfs/Mals` folder and open in the editor, here is a step by step:
+
+<Steps>
+1. Open MSBT Editor
+2. Go to `File` > `Open File...` and select the desired language in your `rofms/Mals` folder
+    
+    *You can also open the Mals folder directly, if you plan to edit multiples languages at the same time.*
+3. Expand the loaded file and find which **.MSBT** you want to edit
+4. Do your edits and save the file with **Ctrl + S**
+5. After finishing all yours edits, right click the *.sarc* file (the root file) and click on `Save`
+6. You have successfully edited your texts!
+</Steps>
+
+## References
+
+### Language Codes
+| Language               | Code |
+| ---------------------- | ---- |
+| Canadian French        | USfr |
+| Latin American Spanish | USes |
+| North American English | USen |
+| Traditional Chinese    | TWzh |
+| Korean                 | KRko |
+| Japanese               | JPja |
+| Dutch                  | EUnl |
+| Italian                | EUit |
+| European French        | EUfr |
+| European Spanish       | EUes |
+| European English       | EUen |
+| German                 | EUde |
+| Simplified Chinese     | CNzh |

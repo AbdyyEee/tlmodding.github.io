@@ -1,0 +1,107 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import starlightSidebarTopics from 'starlight-sidebar-topics'
+import starlightThemeObsidian from 'starlight-theme-obsidian'
+
+const NETLIFY_PREVIEW_SITE = process.env.CONTEXT !== 'production' && process.env.DEPLOY_PRIME_URL;
+
+const site = NETLIFY_PREVIEW_SITE || 'https://tlmodding.github.io/';
+const ogUrl = new URL('banner.png?v=1', site).href;
+const ogImageAlt = 'Your place for everything about Tomodachi Life modding!';
+
+// https://astro.build/config
+export default defineConfig({
+	site: "https://tlmodding.github.io",
+	integrations: [
+		starlight({
+			title: 'Tomodachi Modding',
+			components: {
+				Sidebar: './src/overrides/Sidebar.astro',
+			},
+			customCss: [
+				'./src/styles/custom.css',
+			],
+			social: [
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/tlmodding/tlmodding.github.io' },
+				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/YHFNTvXrdE' },
+			],
+			head: [
+				{
+					tag: 'meta',
+					attrs: { property: 'og:image', content: ogUrl },
+				},
+				{
+					tag: 'meta',
+					attrs: { property: 'og:image:alt', content: ogImageAlt },
+				},
+				{
+					tag: 'meta',
+					attrs: { name: 'theme-color', content: '#ff6d02' },
+				}
+			],
+			editLink: {
+				baseUrl: "https://github.com/tlmodding/tlmodding.github.io/edit/master/"
+			},
+			expressiveCode: {
+				themes: ['dracula', 'one-light'],
+			},
+			plugins: [
+				starlightThemeObsidian({
+					debug: false,
+					sitemapConfig: {},
+					graphConfig: {},
+					backlinksConfig: {},
+					graph: false,
+					backlinks: true,
+				}),
+				starlightSidebarTopics([
+					{
+						label: 'Wiki',
+						link: '/getting-started/overview',
+						icon: 'open-book',
+						items: [
+							{
+								label: 'Getting Started',
+								autogenerate: { directory: "getting-started" }
+							},
+							{
+								label: 'Using Mods',
+								autogenerate: { directory: "using-mods" }
+							},
+							{
+								label: 'Creating Mods',
+								autogenerate: { directory: "creating-mods" }
+							},
+							{
+								label: 'Tools',
+								autogenerate: { directory: 'tools' }
+							},
+							{
+								label: 'Guides',
+								autogenerate: { directory: "guides" }
+							},
+						]
+					},
+					{
+						label: 'Documentation',
+						link: '/documentation',
+						icon: 'laptop',
+						items: [{
+							label: 'Documentation',
+							items:[{
+								label: 'Getting Started',
+								link: '/documentation',
+							}]
+						},
+					 	{
+								label: 'File Formats',
+								autogenerate: { directory: 'documentation/file-formats' },
+						}]
+					},
+
+				])
+			]
+		}),
+	],
+});

@@ -1,0 +1,39 @@
+:root {
+    --sl-content-width: 50rem;
+    --sl-color-accent: #9e4200;
+    --sl-color-accent-high: #ff8a37;
+}
+
+:root[data-theme='dark'] {
+    --sl-color-bg-darker: #0c0d0e;
+}
+
+:root[data-theme='light'] {
+    --sl-color-bg-darker: #eceff1;
+}
+
+.sidebar-pane {
+    border-right: 1px solid var(--sl-color-hairline-shade);
+}
+
+.right-sidebar {
+    border-left: 1px solid var(--sl-color-hairline-shade);
+    margin-top: 10px;
+}
+
+.sl-markdown-content :is(th:last-child, td:last-child):not(:where(.not-content *)) {
+    padding-inline-end: 1rem;
+}
+
+.sl-markdown-content :is(th:first-child, td:first-child):not(:where(.not-content *)) {
+    padding-inline-start: 1rem;
+}
+
+.sl-markdown-content td:not(:where(.not-content *)) {
+    vertical-align: middle;
+}
+
+
+table tbody tr:nth-child(even) {
+    background: var(--sl-color-bg-darker);
+}
