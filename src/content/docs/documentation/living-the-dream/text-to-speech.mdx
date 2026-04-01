@@ -1,0 +1,51 @@
+---
+title: Text to Speech Engine
+description: "The engine behind Tomodachi Life: Living the Dream TTS."
+sidebar: 
+  order: 0
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+
+Ever wondered how Miis are able to speak in **Tomodachi Life: Living the Dream**?
+
+Unlike the original game, **Tomodachi Life: Living the Dream** appears to use a more modern Text-to-Speech system. Based on current findings, the game uses **ReadSpeaker** for Mii voice synthesis.
+
+This page documents the voices discovered so far for each supported language and region.
+
+## About Read Speaker
+
+ReadSpeaker is a global voice specialist providing dozens of languages and lifelike voices. Using its own industry-leading technology, the company delivers some of the most natural-sounding synthesized voices on the market.
+
+ReadSpeaker uses next-generation Deep Neural Network (DNN) technology to structurally improve voice quality at all levels.
+
+<LinkCard
+  title="Read more about Read Speaker"
+  href="https://www.readspeaker.com/about/"
+  target="_blank"
+/>
+
+---
+
+## Voice Files
+
+The files can be found in the `VoiceText` folder of the romfs. And files are named after: `tts_single_db({Voice}).vtdb2` where Voice is the 'actor' name, which can be found on this list:
+
+| Region / Language | Voice |
+|---|---|
+| Japanese | `HIKARI` |
+| American English | `ASHLEY` |
+| American Spanish | `GLORIA` |
+| American French | `CHLOE` |
+| American Portuguese | — |
+| European English | `BRIDGET` |
+| European Spanish | `LOLA` |
+| European French | `ROXANE` |
+| German | `LENA` |
+| Italian | `ELISA` |
+| European Portuguese | — |
+| Dutch | `ANNE` |
+| Russian | — |
+| Korean | `HYERYUN` |
+| Traditional Chinese | `HONG` |
+| Simplified Chinese | `YAFANG` |

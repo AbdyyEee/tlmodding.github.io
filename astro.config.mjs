@@ -107,6 +107,10 @@ export default defineConfig({
 								link: '/documentation',
 							}]
 						},
+						{
+								label: 'Living the Dream',
+								autogenerate: { directory: 'documentation/living-the-dream' },
+						},
 					 	{
 								label: 'File Formats',
 								autogenerate: { directory: 'documentation/file-formats' },
