@@ -68,37 +68,31 @@ Parameters can be read by using a [MSBP](/documentation/file-formats/lms/msbp) f
 Following defines the parameters for all tags in the `System` group.
 
 #### `Ruby`
-
-Version 3:
+Varies between games. Extra `byteSpan` may be provided.
 
 | Name | Type   | Description        |
 | ---- | ------ | ------------------ |
 | `rt` | string | The ruby character |
 
-Version 4:
-
- | Name       | Type   | Description                                       |
- | ---------- | ------ | ------------------------------------------------- |
- | `byteSpan` | u16    | Amount of bytes to render the ruby character over |
- | `rt`       | string | The ruby character                                |
+| Name       | Type   | Description                                       |
+| ---------- | ------ | ------------------------------------------------- |
+| `byteSpan` | u16    | Amount of bytes to render the ruby character over |
+| `rt`       | string | The ruby character                                |
 
 #### `Font`
-
-Version 3:
+Varies between games. `face` may be an index (game specific index into archive?).
 
 | Name   | Type   | Description        |
 | ------ | ------ | ------------------ |
 | `face` | string | The font face name |
 
-Version 4:
 
- | Name   | Type | Description     |
- | ------ | ---- | --------------- |
- | `face` | s16  | Font face index |
+| Name   | Type | Description     |
+| ------ | ---- | --------------- |
+| `face` | s16  | Font face index |
  
- #### `Color`
-
-Version 3:
+#### `Color`
+Varies between games, `rgba` or `id` parameter.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
@@ -106,8 +100,6 @@ Version 3:
 | `g`  | u8   | Green       |
 | `b`  | u8   | Blue        |
 | `a`  | u8   | Alpha       |
-
-Version 4:
 
 | Name | Type | Description                         |
 | ---- | ---- | ----------------------------------- |
@@ -118,8 +110,6 @@ Version 4:
 Contains no parameters.
 
 ### `Reference`
-
-Tag valid only for version 4.
 
 | Name    | Type   | Description                  |
 | ------- | ------ | ---------------------------- |
@@ -132,12 +122,11 @@ Tag valid only for version 4.
 `ATO1` defines which attributes to include from the defined structure in the [MSBP](/documentation/file-formats/lms/msbp) file.
 This is useful to omit certain attributes that may not need to be displayed.
 
-This section be omitted for games that do not require it.
-
 | Offset | Type                  | Description                       |
 | ------ | --------------------- | --------------------------------- |
 | 0x0    | s32 [sectionSize / 4] | Attribute offsets (-1 = no value) |
 
+This section be removed for games that do not require it.
 
 ## ATR1
 
