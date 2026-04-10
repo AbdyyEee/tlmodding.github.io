@@ -1,0 +1,83 @@
+---
+title: Overview
+sidebar:
+  order: 0
+---
+
+Short for `libMessageStudio`, LMS is a proprietary tool utilized by Nintendo developers to store localized text. The following page describes
+the general structure that all LMS file formats follow.
+
+## Format List
+
+* [MSBT](/documentation/file-formats/lms/msbt)
+* [MSBP](/documentation/file-formats/lms/msbp)
+* [MSBF](/documentation/file-formats/lms/msbf)
+
+
+## File Header
+
+| Offset | Type         | Description                                    |
+| ------ | ------------ | ---------------------------------------------- |
+| 0x0    | MAGIC        | Magic number                                   |
+| 0x8    | u16          | BOM                                            |
+| 0xA    | u16          | Unused                                         |
+| 0xC    | u8           | Message encoding (0=UTF-8, 1=UTF-16, 2=UTF-32) |
+| 0xD    | u8           | Version number                                 |
+| 0xE    | u16          | Number of blocks                               |
+| 0x10   | u16          | Unused                                         |
+| 0x12   | u32          | Filesize                                       |
+| 0x16   | padding [10] | Padding                                        |
+
+## Section Header
+
+| Offset | Type        | Description                  |
+| ------ | ----------- | ---------------------------- |
+| 0x0    | MAGIC       | Block Magic                  |
+| 0x4    | u32         | Block size (excludes header) |
+| 0x8    | padding [8] | Padding                      |
+| 0x10   | -           | Block data                   |
+
+## Labels
+
+Labels in LMS file formats are looked up with a hash table. The amount of slots are stay consistent with the format itself no matter
+the amount of items there may be.
+
+| Format | Slot Count |
+| ------ | ---------- |
+| MSBT   | 101        |
+| MSBP   | 29         |
+| MSBF   | 59         |
+
+
+The following hash algorithm is used:
+```python
+def calculate_hash(label: str, slot_count: int):
+    hash = 0
+    for character in label:
+        hash = hash * 0x492 + ord(character)
+    return (hash & 0xFFFFFFFF) % slot_count
+```
+
+### Section Format
+
+| Offset | Type                                 | Description         |
+| ------ | ------------------------------------ | ------------------- |
+| 0x0    | u32                                  | Slot count          |
+| 0x4    | [Hash slots](#hash-slot) [slotCount] | Array of hash slots |
+|        | Labels                               | Label strings       |
+
+### Hash Slot
+
+| Offset | Type | Description                |
+| ------ | ---- | -------------------------- |
+| 0x0    | u32  | Number of labels           |
+| 0x4    | u32  | Offset to [labels](#label) |
+
+### Label
+
+| Offset | Type          | Description  |
+| ------ | ------------- | ------------ |
+| 0x0    | u8            | Label length |
+| 0x1    | `labelLength` | Label string |
+|        | u32           | Item index   |
+
