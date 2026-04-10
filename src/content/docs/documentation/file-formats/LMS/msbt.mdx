@@ -1,0 +1,158 @@
+---
+title: Message Binary Text (MSBT)
+sidebar:
+  order: 1
+---
+
+MSBT (**Message** **Studio** **Binary** **Text**) is a file format that maps labels to text.
+
+| Type   | Description                |
+| ------ | -------------------------- |
+| `LBL1` | [Labels](#lbl1)            |
+| `TXT2` | [Strings](#txt2)           |
+| `ATO1` | [Attribute offsets](#ato1) |
+| `ATR1` | [Attributes](#atr1)        |
+| `TSY1` | [Styles](#tsy1)            |
+
+## LBL1 
+
+`LBL1` stores [labels](/documentation/file-formats/lms/overview/#labels) that directly map entries in the `TXT2`, `ATR1`, and `TSY1` sections.
+
+## TXT2 
+
+`TXT2` stores text in the encoding defined in the file header.
+
+| Offset | Type               | Description                     |
+| ------ | ------------------ | ------------------------------- |
+| 0x0    | u32                | String count                    |
+| 0x4    | u32 [messageCount] | Array of offsets to each string |
+| -      | -                  | Null-terminated Strings         |
+
+### Control Tags
+
+Control tags extend the functionality that text may provide. These are inserted directly into text and in the official
+`libMessageStudio tool` follow BB-code convention `[{GROUP_NAME}:{TAG_NAME} {parameters}]`.
+
+Tags are indicated by `0x0E`, marking an opening tag, and `0x0F` marking a closing tag. Both Aligned to the width of the encoding.
+
+| Offset | Type      | Description                             |
+| ------ | --------- | --------------------------------------- |
+| 0x0    | INDICATOR | Tag indicator                           |
+| 0x2    | u16       | Tag group id into [TGG2](../msbp/#tgp2) |
+| 0x4    | u16       | Tag index in the group                  |
+
+For opening tags:
+
+| Offset | Type | Description    |
+| ------ | ---- | -------------- |
+| 0x4    | u16  | Parameter size |
+| 0x6    | -    | Parameters     |
+
+Parameters can be read by using a [MSBP](/documentation/file-formats/lms/msbp) file and the structure defined in the [TGP2](/documentation/file-formats/lms/msbp/#tgp2) section.
+
+### System Tag Definitions
+
+[MSBP](/documentation/file-formats/lms/msbp) files always define a default group called `System` at group ID 0.
+
+| Tag Index | Name        | Description                                     |
+| --------- | ----------- | ----------------------------------------------- |
+| 0x0       | `Ruby`      | Displays a RUBY character                       |
+| 0x1       | `Font `     | Adjusts the font of the text                    |
+| 0x2       | `Size`      | Adjusts the size of the text                    |
+| 0x3       | `Color`     | Alters the color of a text region               |
+| 0x4       | `PageBreak` | Displays the text on a different page           |
+| 0x5       | `Reference` | References text from a different file and label |
+
+### Parameters
+
+Following defines the parameters for all tags in the `System` group.
+
+#### `Ruby`
+
+Version 3:
+
+| Name | Type   | Description        |
+| ---- | ------ | ------------------ |
+| `rt` | string | The ruby character |
+
+Version 4:
+
+ | Name       | Type   | Description                                       |
+ | ---------- | ------ | ------------------------------------------------- |
+ | `byteSpan` | u16    | Amount of bytes to render the ruby character over |
+ | `rt`       | string | The ruby character                                |
+
+#### `Font`
+
+Version 3:
+
+| Name   | Type   | Description        |
+| ------ | ------ | ------------------ |
+| `face` | string | The font face name |
+
+Version 4:
+
+ | Name   | Type | Description     |
+ | ------ | ---- | --------------- |
+ | `face` | s16  | Font face index |
+ 
+ #### `Color`
+
+Version 3:
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| `r`  | u8   | Red         |
+| `g`  | u8   | Green       |
+| `b`  | u8   | Blue        |
+| `a`  | u8   | Alpha       |
+
+Version 4:
+
+| Name | Type | Description                         |
+| ---- | ---- | ----------------------------------- |
+| `id` | s16  | Color ID into [CLR1](../msbp/#clr1) |
+
+### `PageBreak`
+
+Contains no parameters.
+
+### `Reference`
+
+Tag valid only for version 4.
+
+| Name    | Type   | Description                  |
+| ------- | ------ | ---------------------------- |
+| `mstxt` | string | The message source files     |
+| `label` | string | The label in the source file |
+| `lang`  | string | Language code                |
+
+## ATO1
+
+`ATO1` defines which attributes to include from the defined structure in the [MSBP](/documentation/file-formats/lms/msbp)  file. This is useful to omit certain attributes that may not need to be displayed.
+
+This section be omitted for games that do not require it.
+
+| Offset | Type                  | Description                       |
+| ------ | --------------------- | --------------------------------- |
+| 0x0    | s32 [sectionSize / 4] | Attribute offsets (-1 = no value) |
+
+
+## ATR1
+
+`ATR1` maps labels to a set of attributes.
+
+| Offset | Type | Description                   |
+| ------ | ---- | ----------------------------- |
+| 0x0    | u32  | Attribute count               |
+| 0x4    | u32  | Bytes per attribute container |
+| 0x8    | -    | Attributes                    |
+| -      | -    | String table                  |
+
+## TSY1 
+
+`TSY1` stores the index of styles for lookup in the [SYL3](/documentation/file-formats/lms/msbp/#syl3) section.
+
+| Offset | Type | Description |
+| ------ | ---- | ----------- |
+| 0x0    | u32  | Style index |

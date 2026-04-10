@@ -1,0 +1,124 @@
+---
+title: Message Binary Flowchart (MSBF)
+sidebar:
+  order: 3
+---
+
+MSBF (**M**essage **S**tudio **B**inary **F**lowchart) is a file format that stores flowcharts used for event flows.
+
+| Type   | Description               |
+| ------ | ------------------------- |
+| `FLW3` | [Nodes](#flw3)            |
+| `FEN1` | [Flowchart Labels](#fen1) |
+| `REF1` | ?                         |
+
+## FLW3
+
+`FLW3` stores every node in all flowcharts.
+
+| Offset | Type                        | Description                   |
+| ------ | --------------------------- | ----------------------------- |
+| 0x0    | u16                         | Node count                    |
+| 0x2    | s16                         | Branch ID Count               |
+| 0x4    | padding [12]                | -                             |
+| 0x10   | [Nodes](#nodes) [nodeCount] | The node data.                |
+|        | s16 [branchIdCount]         | [Branch table](#branch-table) |
+|        |                             | [String table](#string-table) |
+
+### Nodes
+
+Actions defined within the FLW3 Section are done via nodes. 
+
+| Offset | Type        | Description                                                                                               |
+| ------ | ----------- | --------------------------------------------------------------------------------------------------------- |
+| 0x0    | u8          | [Node type](#node-types)                                                                                  |
+| 0x1    | u8          | [Parameter type](#parameter-types) (Only for [Branch Nodes](#branch-node) and [Event Nodes](#event-node)) |
+| 0x2    | padding [2] | -                                                                                                         |
+| 0x4    | -           | Parameter value                                                                                           |
+| 0x8    | -           | Node data                                                                                                 |
+
+#### Node Types
+
+| Value | Type                     | Description                                                    |
+| ----- | ------------------------ | -------------------------------------------------------------- |
+| 1     | [Message](#message-node) | Prompts a message from a MSBT file                             |
+| 2     | [Branch](#branch-node)   | Branches to a different node depending on a specific condition |
+| 3     | [Event](#event-node)     | Executes a specific action or game event                       |
+| 4     | [Entry](#entry-node)     | Node that acts as a starting point for a flowchart             |
+| 5     | [Jump](#jump-node)       | Jumps  to a different flowchart                                |
+
+#### Parameter Types
+
+Parameter types dictate how parameter values may be passed into the node if it takes arguments. There may be more than one value passed into a node.
+
+| Value | Description                                                                                              |
+| ----- | -------------------------------------------------------------------------------------------------------- |
+| 0     | Int32 value                                                                                              |
+| 1     | Pair of Int16 values                                                                                     |
+| 2     | Int16 value + pair of Int8 values                                                                        |
+| 3     | Pair of Int8 + Int16 value                                                                               |
+| 4     | Int8 Array                                                                                               |
+| 5     | String value. Stored as an offset from start of block to the string in the [string table](#string-table) |
+| 6     | Int32 value                                                                                              |
+
+### Message Node
+
+| Offset | Type        | Description                                                                    |
+| ------ | ----------- | ------------------------------------------------------------------------------ |
+| 0x0    | s16         | Next node ID                                                                   |
+| 0x2    | u16         | [ATR1](/documentation/file-formats/lms/msbt) file index into folder or archive |
+| 0x4    | u16         | Message index into [TXT2](/documentation/file-formats/lms/msbt/#txt2)          |
+| 0x6    | padding [2] | -                                                                              |
+
+### Branch Node 
+
+| Offset | Type | Description                          |
+| ------ | ---- | ------------------------------------ |
+| 0x0    | s16  | `-1`                                 |
+| 0x2    | u16  | Node Identifier                      |
+| 0x4    | u16  | Branch table case count              |
+| 0x6    | u16  | Starting index into the branch table |
+
+### Event Node
+
+| Offset | Type        | Description     |
+| ------ | ----------- | --------------- |
+| 0x0    | s16         | Next node ID    |
+| 0x2    | u16         | Node identifier |
+| 0x4    | padding [3] | -               |
+
+The node identifier allows a game to link the node to a specific action or condition. 
+
+### Entry Node
+
+| Offset | Size        | Description  |
+| ------ | ----------- | ------------ |
+| 0x0    | s16         | Next node ID |
+| 0x2    | padding [6] | -            |
+
+### Jump Node
+
+| Offset | Type        | Description  |
+| ------ | ----------- | ------------ |
+| 0x0    | s16         | Flowchart ID |
+| 0x2    | padding [6] | -            |
+
+The next node index when marked as `-1` is the end of a flowchart unless it is a branch node. The next node for a jump node must refer to the ID of the entry node for another flowchart.
+
+### Branch Table
+
+Nodes that are branch will jump to a specifc case based on a condition. These function like switch statements.
+
+| Offset | Type                | Description      |
+| ------ | ------------------- | ---------------- |
+| 0x0    | s16 [branchIdCount] | List of node IDs |
+
+### String Table 
+
+| Offset | Type | Description                     |
+| ------ | ---- | ------------------------------- |
+| 0x0    |      | List of null-terminated strings |
+
+## FEN1
+
+This block contains the flowchart [labels](../overview/#labels). The index of a flowchart is the location of its [Entry node](#entry-node).

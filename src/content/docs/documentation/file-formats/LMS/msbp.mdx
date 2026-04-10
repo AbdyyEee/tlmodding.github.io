@@ -1,0 +1,220 @@
+---
+title: Message Binary Project (MSBP)
+sidebar:
+  order: 2
+---
+
+MSBP (**M**essage **S**tudio **B**inary **P**roject) is a file format that stores relevant metadata for [MSBT](../msbt) files.
+
+| Type   | Description                                                          |
+| ------ | -------------------------------------------------------------------- |
+| `CLR1` | [Colors](#clr1)                                                      |
+| `CLB1` | [Color labels](/documentation/file-formats/lms/overview/#labels)     |
+| `ATI2` | [Attributes](#ati2)                                                  |
+| `ALB1` | [Attribute labels](/documentation/file-formats/lms/overview/#labels) |
+| `ALI2` | [Attribute lists](#ali2)                                             |
+| `TGG2` | [Tag groups](#tgg2)                                                  |
+| `TAG2` | [Tags definitions](#tag2)                                            |
+| `TGP2` | [Tag parameters](#tgp2)                                              |
+| `TGL2` | [Tag string list](#tgl2)                                             |
+| `SYL3` | [Styles](#syl3)                                                      |
+| `SLB1` | [Style labels](/documentation/file-formats/lms/overview/#labels)     |
+| `CTI1` | [Source files](#cti1)                                                |
+
+Some sections may be omitted.
+
+## CLR1
+
+`CLR1` holds color definitions. These may be looked my by label through `CLB1` or by their index.
+
+| Offset | Type | Description |
+| ------ | ---- | ----------- |
+| 0x0    | u32  | Color count |
+| 0x4    | RGBA | Colors      |
+
+## ATI2
+
+`ATI2` defines the structure of attributes for the [ATR1](/documentation/file-formats/lms/msbt/#atr1) section.
+
+| Offset | Type                                      | Description               |
+| ------ | ----------------------------------------- | ------------------------- |
+| 0x0    | u32                                       | Attribute count           |
+| 0x4    | [Attributes](#attribute) [attributeCount] | The attribute definitions |
+
+### Attribute
+
+| Offset | Type                        | Description                                                             |
+| ------ | --------------------------- | ----------------------------------------------------------------------- |
+| 0x0    | [Attribute Type](#datatype) | The attribute type                                                      |
+| 0x1    | padding [1]                 | -                                                                       |
+| 0x2    | u16                         | Start index into the list in [ALI2](#ali2) (only valid for `LIST` type) |
+| 0x4    | u32                         | Offset in attribute container                                           |
+
+In [MSBT](/documentation/file-formats/lms/msbt) files, string attributes are stored as `u32` pointer.
+
+## ALI2
+
+| Offset | Type                               | Description                |
+| ------ | ---------------------------------- | -------------------------- |
+| 0x0    | u32                                | List count                 |
+| 0x4    | u32 [listCount]                    | Offsets to attribute lists |
+|        | [Attribute Lists](#attribute-list) | Attribute list definitions |
+
+The section is always padded until it has a multiple of 4 bytes.
+
+### Attribute List
+| Offset | Type               | Description                       |
+| ------ | ------------------ | --------------------------------- |
+| 0x0    | u32                | Item Count                        |
+| 0x4    | u32 [itemCount]    | Offsets to list item names        |
+|        | string [itemCount] | Null-terminated list item strings |
+
+## TGG2 
+
+`TGG2` defines tag groups for [MSBT](/documentation/file-formats/lms/msbt) files.
+
+
+| Offset | Type                                 | Description                         |
+| ------ | ------------------------------------ | ----------------------------------- |
+| 0x0    | u16                                  | Group count                         |
+| 0x2    | padding [2]                          | -                                   |
+| 0x4    | u32 [groupCount]                     | Offsets to [tag groups](#tag-group) |
+|        | [Tag Group](#tag-group) [groupCount] | Tag groups                          |
+
+### Tag Group
+
+Tag groups act as the main container for tags. All group definitions are padded to a multiple of 4.
+
+Version 3 MSBP:
+
+| Offset | Type           | Description                             |
+| ------ | -------------- | --------------------------------------- |
+| 0x0    | u16            | Tag count                               |
+| 0x2    | u16 [tagCount] | Tag indices (located in the TAG2 block) |
+|        | string         | Null-terminated group name              |
+
+
+Version 4 MSBP:
+
+| Offset | Type           | Description                             |
+| ------ | -------------- | --------------------------------------- |
+| 0x0    | u16            | Group ID                                |
+| 0x2    | u16            | Tag count                               |
+| 0x4    | u16 [tagCount] | Tag indices (located in the TAG2 block) |
+|        | string         | Null-terminated group name              |
+
+
+## TAG2 Block
+
+`TAG2` holds control tag definitions. All definitions are padded to a multiple of 4.
+
+| Offset | Type           | Description                                       |
+| ------ | -------------- | ------------------------------------------------- |
+| 0x0    | u16            | Tag count                                         |
+| 0x2    | padding [2]    | -                                                 |
+| 0x4    | u32 [tagCount] | Offsets to each [tag definition](#tag-definition) |
+
+### Tag Definition
+
+| Offset | Type                 | Description                                         |
+| ------ | -------------------- | --------------------------------------------------- |
+| 0x0    | u16                  | Parameter count                                     |
+| 0x2    | u16 [parameterCount] | Tag parameter indices in  the [TGP2](#tgp2) section |
+| -      | -                    | Null-terminated tag name                            |
+
+## TGP2
+
+`TGP2` holds tag parameter definitions. All definitions are padded to a multiple of 4.
+
+| Offset | Type                 | Description                             |
+| ------ | -------------------- | --------------------------------------- |
+| 0x0    | u16                  | Parameter count                         |
+| 0x2    | padding [2]          | -                                       |
+| 0x4    | u32 [parameterCount] | Offsets to [parameters](#tag-parameter) |
+
+### Tag Parameter
+| Offset | Type | Description                 |
+| ------ | ---- | --------------------------- |
+| 0x0    | u8   | [Parameter type](#datatype) |
+
+In [MSBT](/documentation/file-formats/lms/msbt) files, parameters which are strings will be length prefixed.
+
+If type is not `LIST`
+
+| Offset | Type   | Description                    |
+| ------ | ------ | ------------------------------ |
+| 0x1    | string | Null-terminated Parameter name |
+
+If type is `LIST`
+
+| Offset | Type              | Description                                 |
+| ------ | ----------------- | ------------------------------------------- |
+| 0x1    | padding [1]       | -                                           |
+| 0x2    | u16               | String count                                |
+| 0x4    | u16 [stringCount] | String indices in the [TGL2](#tgl2) section |
+|        | string            | Null-terminated Parameter name              |
+
+
+## TGL2
+
+`TGP2` stores strings for all `LIST` datatype parameters in [TGP2](#tgp2).
+
+| Offset | Type              | Description              |
+| ------ | ----------------- | ------------------------ |
+| 0x0    | u16               | String count             |
+| 0x2    | u16               | Padding                  |
+| 0x4    | u32 [stringCount] | Offsets to start of list |
+|        |                   | Null-terminated strings  |
+
+## SYL3
+
+`SYL3` stores style data. These may be looked my by label through `SLB1` or by their index.
+
+| Offset | Type               | Description      |
+| ------ | ------------------ | ---------------- |
+| 0x0    | u32                | Style Count      |
+| 0x4    | Style [styleCount] | [Styles](#style) |
+
+### Style
+
+| Offset | Type | Description                          |
+| ------ | ---- | ------------------------------------ |
+| 0x0    | u32  | Region width                         |
+| 0x4    | u32  | Line number                          |
+| 0x8    | u32  | Font index                           |
+| 0xC    | u32  | Color index into [CLB1](#clb1-block) |
+
+## CTI1
+
+`CTI1` defines source files made with the project.
+
+| Offset | Type            | Description                  |
+| ------ | --------------- | ---------------------------- |
+| 0x0    | u32             | File count                   |
+| 0x4    | u32 [fileCount] | Offsets to file strings      |
+|        |                 | Null terminated File strings |
+
+Binary to Source naming scheme:
+| Binary Format | Source Format |
+| ------------- | ------------- |
+| `.msbt`       | `.mstxt`      |
+| `.msbt`       | `.msproj`     |
+| `.msbt`       | `.msflow`     |
+
+## Datatype 
+
+[Attributes](#ati2) and [Tag Parameters](#tgp2) store values based on a datatype. The enum is as follows:
+
+
+| Value | Datatype                                     |
+| ----- | -------------------------------------------- |
+| 0x0   | `u8`                                         |
+| 0x1   | `u16`                                        |
+| 0x2   | `u32`                                        |
+| 0x3   | `s8`                                         |
+| 0x4   | `s16`                                        |
+| 0x5   | `s32`                                        |
+| 0x6   | `f32`                                        |
+| 0x7   | Unknown                                      |
+| 0x8   | `string`                                     |
+| 0x9   | known as `list` functionally equal to `enum` |
