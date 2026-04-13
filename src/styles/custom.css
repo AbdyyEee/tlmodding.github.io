@@ -37,3 +37,7 @@
 table tbody tr:nth-child(even) {
     background: var(--sl-color-bg-darker);
 }
+
+starlight-obsidian-theme-select {
+    height: 100%;
+}

@@ -16,6 +16,17 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Tomodachi Modding',
+			defaultLocale: 'root',
+			locales: {
+				root: {
+					label: 'English',
+					lang: 'en'
+				},
+				'pt-br': {
+					label: "Português (BR)",
+					lang: 'pt-BR'
+				}
+			},
 			components: {
 				Sidebar: './src/overrides/Sidebar.astro',
 			},
