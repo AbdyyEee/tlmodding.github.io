@@ -15,7 +15,7 @@ and their [attributes](/documentation/file-formats/lms/msbt/#atr1) so several pr
 This is a working-in-progress page. More info will be added in the future.
 :::
 
-### Loading of Scenes 
+### Scene Loading & Properties
 In the case of folders like `Drama`, all events must contain the three following files (example event name):
 
 ```
@@ -29,7 +29,9 @@ romfs/message/Drama
 
 `ToolBath.msbt` is a [MSBT](/documentation/file-formats/lms/msbt) file that stores normal message text data for referencing.
 
-`ToolBath_Build.msbt` is a [MSBT](/documentation/file-formats/lms/msbt) files store which relevant scene data as [Attributes](/documentation/file-formats/lms/msbt/#atr1). Each label in the file follows the bottom list of attributes, however not all attribute fields are necessary.
+`ToolBath_Build.msbt` is a [MSBT](/documentation/file-formats/lms/msbt) files store which relevant scene data as [Attributes](/documentation/file-formats/lms/msbt/#atr1). 
+
+Each label in the file follows the bottom list of attributes, however not all attribute fields are necessary.
 
 | Name                      | Datatype | Description                                                                                                                  |
 | ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -45,9 +47,9 @@ romfs/message/Drama
 | `bl_SRTBone`              | string   | -                                                                                                                            |
 | `bl_Pos`                  | string   | -                                                                                                                            |
 | `bl_Anim`                 | string   | Animation name (if applicable).                                                                                              |
-| `bl_ExpFlag`              | string   | Expression flag (Examples: `1,9`, `1,9,0,8`).                                                                                |
-| `bl_Body`                 | string   | -                                                                                                                            |
-| `bl_Headwear`             | string   | -                                                                                                                            |
+| `bl_ExpFlag`              | string   | `_mii` attributes only. Mii Expression flag (Examples: `1,9`, `1,9,0,8`).                                                    |
+| `bl_Body`                 | string   | `_mii` attributes only. Sets the clothing for a Mii.                                                                         |
+| `bl_Headwear`             | string   | `_mii` attributes only. Sets the hat for a Mii.                                                                              |
 | `bl_RoomId`               | s8       | -                                                                                                                            |
 | `bl_ItemList`             | string   | -                                                                                                                            |
 | `bl_LightParentCamera`    | string   | -                                                                                                                            |
@@ -118,7 +120,7 @@ romfs/message/Drama
 
 ## Nodes 
 
-Following describes and document node types and their identifers to build a comprehensive view on actions. 
+Following describes and document node types and their identifers to build a comprehensive view on MSBF functions. 
 
 ### Message Nodes
 [Message Nodes](/documentation/file-formats/lms/msbf/message-nodes) reference a message in a [MSBT](/documentation/file-formats/lms/msbt) file. These may be used for when Miis talk, buttons are prompted or a caption is shown on screen.
